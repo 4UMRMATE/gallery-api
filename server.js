@@ -10,7 +10,6 @@ const { Schema } = mongoose;
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
@@ -57,11 +56,20 @@ const commentSchema = new Schema({
   picture_id: ObjectId,
   author: {
     type: String,
-    required: true,
+    default: "Guest",
+  },
+  avatar: {
+    type: String,
+    default:
+      "https://cdn4.iconfinder.com/data/icons/gray-business-2/512/xxx006-512.png",
   },
   text: {
     type: String,
     required: true,
+  },
+  upvotes: {
+    type: Number,
+    default: 0,
   },
   date: String,
 });
@@ -97,13 +105,14 @@ const dateToUTC = (date) => {
 };
 
 app.post("/api/gallery/add-comment", (req, res) => {
-  Picture.findById(req.body.picture_id, (err, picture) => {
+  Picture.findById(req.query.picture_id, (err, picture) => {
     if (err) res.json({ error: err });
 
     const newComment = new Comment({
-      author: req.body.author,
       picture_id: picture["_id"],
-      text: req.body.text,
+      author: req.query.author,
+      avatar: req.query.avatar,
+      text: req.query.text,
     });
     let commentDate = new Date();
     newComment.date = dateToUTC(commentDate);
@@ -115,6 +124,7 @@ app.post("/api/gallery/add-comment", (req, res) => {
     res.json({
       _id: picture["_id"],
       author: newComment.author,
+      avatar: newComment.avatar,
       text: newComment.text,
       date: newComment.date,
     });
