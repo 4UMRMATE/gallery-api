@@ -76,7 +76,7 @@ const commentSchema = new Schema({
 
 const Comment = new mongoose.model("Comment", commentSchema);
 
-app.get("/api/gallery/comment", (req, res) => {
+app.get("/api/gallery/comment/", (req, res) => {
   if (req.query.picture_id) {
     Picture.findById(req.query.picture_id, (err, picture) => {
       if (err) res.send("Unknown picture_id");
@@ -85,8 +85,6 @@ app.get("/api/gallery/comment", (req, res) => {
           if (err) res.json(err);
 
           res.json({
-            _id: picture["_id"],
-            count: log.length,
             comments: comments,
           });
         });
@@ -104,7 +102,7 @@ const dateToUTC = (date) => {
   return dateUTC;
 };
 
-app.post("/api/gallery/add-comment", (req, res) => {
+app.post("/api/gallery/add-comment/", (req, res) => {
   Picture.findById(req.query.picture_id, (err, picture) => {
     if (err) res.json({ error: err });
 
