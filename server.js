@@ -27,7 +27,7 @@ const pictureSchema = new Schema({
   },
   likes: {
     type: Number,
-    required: true,
+    default: 0,
   },
 });
 
@@ -42,11 +42,11 @@ app.get("/api/gallery/pictures", async (req, res) => {
   }
 });
 
-app.post("/api/gallery/new-picture", async (req, res) => {
-  console.log(req.body);
+app.post("/api/gallery/new-picture/", async (req, res) => {
+  let img_url = "";
+  req.query.url ? (img_url = req.query.url) : (img_url = req.body.picture_url);
   const newPicture = new Picture({
-    url: req.body.picture_url,
-    likes: 0,
+    url: img_url,
   });
 
   newPicture.save();
@@ -99,7 +99,6 @@ const dateToUTC = (date) => {
 app.post("/api/gallery/add-comment", (req, res) => {
   Picture.findById(req.body.picture_id, (err, picture) => {
     if (err) res.json({ error: err });
-    console.log(picture);
 
     const newComment = new Comment({
       author: req.body.author,
